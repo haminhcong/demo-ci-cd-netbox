@@ -17,7 +17,7 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v3
         with:
-          repository: https://github.com/netbox-community/netbox-docker.git
+          repository: netbox-community/netbox-docker
           ref: release
   
       - name: Get Version of NetBox Docker
