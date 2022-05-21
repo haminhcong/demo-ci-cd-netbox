@@ -24,7 +24,10 @@ jobs:
         with:
           repository: netbox-community/netbox-docker
           ref: release
-  
+      - name: pull docker image
+        run: |
+          docker pull conghm96/netbox:v5.0.0.dev6
+        shell: bash
       - name: Get Version of NetBox Docker
         run: |
           echo "::set-output name=version::$(cat VERSION)"
