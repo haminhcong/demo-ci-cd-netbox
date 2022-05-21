@@ -1957,12 +1957,12 @@ class SimpleDeviceTest(APITestCase):
         # Assign primary IPs for filtering
         ipaddresses = (
             IPAddress(address='192.0.2.1/24', assigned_object=interfaces[0]),
-            IPAddress(address='2001:db8::1/64', tenant=None, vrf=None, assigned_object=interfaces[1],
-                      dns_name='ipaddress-a', description='foobar2'),
+            # IPAddress(address='2001:db8::1/64', tenant=None, vrf=None, assigned_object=interfaces[1],
+            #           dns_name='ipaddress-a', description='foobar2'),
         )
         IPAddress.objects.bulk_create(ipaddresses)
         Device.objects.filter(pk=devices[0].pk).update(primary_ip4=ipaddresses[0])
-        Device.objects.filter(pk=devices[1].pk).update(primary_ip4=ipaddresses[1])
+        # Device.objects.filter(pk=devices[1].pk).update(primary_ip6=ipaddresses[1])
 
         # VirtualChassis assignment for filtering
         virtual_chassis = VirtualChassis.objects.create(master=devices[0])
