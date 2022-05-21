@@ -268,6 +268,7 @@ urlpatterns = [
     path('devices/<int:pk>/status/', views.DeviceStatusView.as_view(), name='device_status'),
     path('devices/<int:pk>/lldp-neighbors/', views.DeviceLLDPNeighborsView.as_view(), name='device_lldp_neighbors'),
     path('devices/<int:pk>/config/', views.DeviceConfigView.as_view(), name='device_config'),
+    path('extra-devices/<int:pk>/', views.DeviceExtraView.as_view(), name='device-extra'),
 
     # Modules
     path('modules/', views.ModuleListView.as_view(), name='module_list'),
