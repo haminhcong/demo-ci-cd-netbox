@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: release
     env:
       GH_ACTION: enable
       URL: https://github.com/haminhcong/demo-ci-cd-netbox.git 
