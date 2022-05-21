@@ -76,7 +76,8 @@ jobs:
       run: scripts/verify-bundles.sh
 
     - name: Run tests
-      run: coverage run --source="netbox/" netbox/manage.py test netbox/ --parallel
+      # run: coverage run --source="netbox/" netbox/manage.py test netbox/ --parallel
+      run: coverage run --source="netbox/" netbox/manage.py test netbox/
 
     - name: Show coverage report
       run: coverage report --skip-covered --omit *migrations*
