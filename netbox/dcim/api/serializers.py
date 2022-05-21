@@ -1160,12 +1160,18 @@ class SimpleDeviceSerializer(NetBoxModelSerializer):
             'primary_ip4', 'primary_ip6'
         ]
 
-    @swagger_serializer_method(serializer_or_field=NestedDeviceSerializer)
+    @swagger_serializer_method(serializer_or_field=NestedIPAddressSerializer)
     def get_primary_ip_address(self, obj):
+        context = {'request': self.context['request']}
+
         if obj.primary_ip4:
-            return obj.primary_ip4
+            data = NestedIPAddressSerializer(instance=obj.primary_ip4,
+                                             context=context).data
+            return data
         elif obj.primary_ip6:
-            return obj.primary_ip6
+            data = NestedIPAddressSerializer(instance=obj.primary_ip6,
+                                             context=context).data
+            return data
         else:
             return None
 
