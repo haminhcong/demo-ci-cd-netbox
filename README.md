@@ -4,6 +4,8 @@
 
 ![Master branch build status](https://github.com/netbox-community/netbox/workflows/CI/badge.svg?branch=master)
 
+[![codecov](https://codecov.io/gh/haminhcong/demo-ci-cd-netbox/branch/develop/graph/badge.svg?token=MFKBZ7KIYT)](https://codecov.io/gh/haminhcong/demo-ci-cd-netbox)
+
 NetBox is an infrastructure resource modeling (IRM) tool designed to empower
 network automation, used by thousands of organizations around the world.
 Initially conceived by the network engineering team at
