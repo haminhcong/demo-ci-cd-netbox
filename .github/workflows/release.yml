@@ -59,6 +59,8 @@ jobs:
           location: ${{ env.GKE_ZONE }}
           credentials: ${{ secrets.GKE_SA_KEY }}
 
+      - name: Check out oginal repo
+        uses: actions/checkout@v3
 
       # Set up kustomize
       - name: Set up Kustomize
