@@ -1154,6 +1154,6 @@ class SimpleDeviceSerializer(NetBoxModelSerializer):
     class Meta:
         model = Device
         fields = [
-            'id', 'name',  'tenant', 'site', 'location', 'rack', 'face', 
+            'id', 'name',  'tenant', 'site', 'location', 'rack', 'face',
             'position', 'status', 'primary_ip', 'primary_ip4', 'primary_ip6'
         ]
