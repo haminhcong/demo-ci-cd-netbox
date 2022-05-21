@@ -1807,6 +1807,94 @@ class ConnectedDeviceTest(APITestCase):
         self.assertHttpStatus(response, status.HTTP_404_NOT_FOUND)
 
 
+class SimpleDeviceTest(APITestCase):
+    model = Device
+    brief_fields = ['display', 'id', 'name', 'url']
+    bulk_update_data = {
+        'status': 'failed',
+    }
+
+    @classmethod
+    def setUpTestData(cls):
+
+        sites = (
+            Site(name='Site 1', slug='site-1'),
+            Site(name='Site 2', slug='site-2'),
+        )
+        Site.objects.bulk_create(sites)
+
+        racks = (
+            Rack(name='Rack 1', site=sites[0]),
+            Rack(name='Rack 2', site=sites[1]),
+        )
+        Rack.objects.bulk_create(racks)
+
+        manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
+
+        device_types = (
+            DeviceType(manufacturer=manufacturer, model='Device Type 1', slug='device-type-1'),
+            DeviceType(manufacturer=manufacturer, model='Device Type 2', slug='device-type-2'),
+        )
+        DeviceType.objects.bulk_create(device_types)
+
+        device_roles = (
+            DeviceRole(name='Device Role 1', slug='device-role-1', color='ff0000'),
+            DeviceRole(name='Device Role 2', slug='device-role-2', color='00ff00'),
+        )
+        DeviceRole.objects.bulk_create(device_roles)
+
+        cluster_type = ClusterType.objects.create(name='Cluster Type 1', slug='cluster-type-1')
+
+        clusters = (
+            Cluster(name='Cluster 1', type=cluster_type),
+            Cluster(name='Cluster 2', type=cluster_type),
+        )
+        Cluster.objects.bulk_create(clusters)
+
+        devices = (
+            Device(
+                device_type=device_types[0],
+                device_role=device_roles[0],
+                name='Device 1',
+                site=sites[0],
+                rack=racks[0],
+                cluster=clusters[0],
+                local_context_data={'A': 1}
+            ),
+            Device(
+                device_type=device_types[0],
+                device_role=device_roles[0],
+                name='Device 2',
+                site=sites[0],
+                rack=racks[0],
+                cluster=clusters[0],
+                local_context_data={'B': 2}
+            ),
+            Device(
+                device_type=device_types[0],
+                device_role=device_roles[0],
+                name='Device 3',
+                site=sites[0],
+                rack=racks[0],
+                cluster=clusters[0],
+                local_context_data={'C': 3}
+            ),
+        )
+        Device.objects.bulk_create(devices)
+
+    def test_get_simple_devices_list(self):
+        """
+        Check that creating a device with a duplicate name within a site fails.
+        """
+
+        self.add_permissions('dcim.view_device')
+        url = reverse('dcim-api:simple-devices-list')
+        response = self.client.get(url, **self.header)
+
+        self.assertHttpStatus(response, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 3)
+
+
 class VirtualChassisTest(APIViewTestCases.APIViewTestCase):
     model = VirtualChassis
     brief_fields = ['display', 'id', 'master', 'member_count', 'name', 'url']
