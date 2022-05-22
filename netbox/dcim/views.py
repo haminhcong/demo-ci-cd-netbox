@@ -3286,29 +3286,29 @@ class PowerFeedBulkDeleteView(generic.BulkDeleteView):
     table = tables.PowerFeedTable
 
 
-def get_device_extra_data(device_id):
-    from django.db import connection, transaction
-    cursor = connection.cursor()
-    # cursor.execute("SELECT * FROM service_module LIMIT 3 OFFSET 2")
-    cursor.execute(f"""
-        SELECT
-            dcim_device.name AS device_name,
-            dcim_device.serial AS device_serial,
-            ipam_ipaddress.address AS device_primary_ip
-                  FROM "dcim_device"
-                  LEFT OUTER JOIN "ipam_ipaddress"
-                    ON ("dcim_device"."primary_ip4_id" = "ipam_ipaddress"."id")
-                  LEFT OUTER JOIN "ipam_ipaddress" T5
-                    ON ("dcim_device"."primary_ip6_id" = T5."id")
-            WHERE dcim_device.id = {device_id}
-            LIMIT 10 OFFSET 0
-    """)
-    row = cursor.fetchall()
-
-    return row
-
-
-class DeviceExtraView(View):
-    def get(self, request, pk):
-        data = get_device_extra_data(pk)
-        return JsonResponse({'result': data})
+# def get_device_extra_data(device_id):
+#     from django.db import connection, transaction
+#     cursor = connection.cursor()
+#     # cursor.execute("SELECT * FROM service_module LIMIT 3 OFFSET 2")
+#     cursor.execute(f"""
+#         SELECT
+#             dcim_device.name AS device_name,
+#             dcim_device.serial AS device_serial,
+#             ipam_ipaddress.address AS device_primary_ip
+#                   FROM "dcim_device"
+#                   LEFT OUTER JOIN "ipam_ipaddress"
+#                     ON ("dcim_device"."primary_ip4_id" = "ipam_ipaddress"."id")
+#                   LEFT OUTER JOIN "ipam_ipaddress" T5
+#                     ON ("dcim_device"."primary_ip6_id" = T5."id")
+#             WHERE dcim_device.id = {device_id}
+#             LIMIT 10 OFFSET 0
+#     """)
+#     row = cursor.fetchall()
+#
+#     return row
+#
+#
+# class DeviceExtraView(View):
+#     def get(self, request, pk):
+#         data = get_device_extra_data(pk)
+#         return JsonResponse({'result': data})
