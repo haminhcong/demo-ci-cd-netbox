@@ -3300,7 +3300,6 @@ def get_device_extra_data(device_id):
                     ON ("dcim_device"."primary_ip4_id" = "ipam_ipaddress"."id")
                   LEFT OUTER JOIN "ipam_ipaddress" T5
                     ON ("dcim_device"."primary_ip6_id" = T5."id")
-            WHERE dcim_device.id = {device_id}
             LIMIT 10 OFFSET 0
     """)
     row = cursor.fetchall()
