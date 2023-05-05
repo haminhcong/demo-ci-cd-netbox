@@ -1135,3 +1135,53 @@ class PowerFeedSerializer(NetBoxModelSerializer, LinkTerminationSerializer, Conn
             'connected_endpoint', 'connected_endpoint_type', 'connected_endpoint_reachable', 'tags', 'custom_fields',
             'created', 'last_updated', '_occupied',
         ]
+
+
+class SimpleDeviceSerializer(NetBoxModelSerializer):
+
+    tenant = NestedTenantSerializer(required=False, allow_null=True, default=None)
+    site = NestedSiteSerializer()
+    location = NestedLocationSerializer(required=False, allow_null=True, default=None)
+    rack = NestedRackSerializer(required=False, allow_null=True, default=None)
+    face = ChoiceField(choices=DeviceFaceChoices, allow_blank=True, default='')
+    position = serializers.IntegerField(allow_null=True, label='Position (U)', min_value=1, default=None)
+    status = ChoiceField(choices=DeviceStatusChoices, required=False)
+    primary_ip_address = serializers.SerializerMethodField()
+    primary_ip4 = NestedIPAddressSerializer(required=False, allow_null=True)
+    primary_ip6 = NestedIPAddressSerializer(required=False, allow_null=True)
+    # parent_device = serializers.SerializerMethodField()
+
+    class Meta:
+
+        model = Device
+        fields = [
+            'id', 'name', 'tenant', 'site', 'location', 'rack', 'face',
+            'position', 'status', 'primary_ip_address',
+            'primary_ip4', 'primary_ip6'
+        ]
+
+    @swagger_serializer_method(serializer_or_field=NestedIPAddressSerializer)
+    def get_primary_ip_address(self, obj):
+        context = {'request': self.context['request']}
+
+        if obj.primary_ip4:
+            data = NestedIPAddressSerializer(instance=obj.primary_ip4,
+                                             context=context).data
+            return data
+        elif obj.primary_ip6:
+            data = NestedIPAddressSerializer(instance=obj.primary_ip6,
+                                             context=context).data
+            return data
+        else:
+            return None
+
+    @swagger_serializer_method(serializer_or_field=NestedDeviceSerializer)
+    def get_parent_device(self, obj):
+        try:
+            device_bay = obj.parent_bay
+        except DeviceBay.DoesNotExist:
+            return None
+        context = {'request': self.context['request']}
+        data = NestedDeviceSerializer(instance=device_bay.device, context=context).data
+        data['device_bay'] = NestedDeviceBaySerializer(instance=device_bay, context=context).data
+        return data
