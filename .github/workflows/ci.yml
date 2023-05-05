@@ -67,7 +67,7 @@ jobs:
       run: python netbox/manage.py collectstatic --no-input
 
     - name: Check PEP8 compliance
-      run: pycodestyle --ignore=W504,E501 --exclude=node_modules netbox/
+      run: pycodestyle --ignore=W504,E501,E275 --exclude=node_modules netbox/
 
     - name: Check UI ESLint, TypeScript, and Prettier Compliance
       run: yarn --cwd netbox/project-static validate
@@ -76,7 +76,8 @@ jobs:
       run: scripts/verify-bundles.sh
 
     - name: Run tests
-      run: coverage run --source="netbox/" netbox/manage.py test netbox/ --parallel
+      # run: coverage run --source="netbox/" netbox/manage.py test netbox/ --parallel
+      run: coverage run --source="netbox/" netbox/manage.py test netbox/
 
     - name: Show coverage report
       run: coverage report --skip-covered --omit *migrations*

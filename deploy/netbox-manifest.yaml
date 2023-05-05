@@ -1,0 +1,122 @@
+---
+# Source: netbox/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbox
+  labels:
+    helm.sh/chart: netbox-4.0.1
+    app.kubernetes.io/name: netbox
+    app.kubernetes.io/instance: netbox
+    app.kubernetes.io/version: "v3.0.11"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: netbox
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: netbox
+      app.kubernetes.io/instance: netbox
+      app.kubernetes.io/component: netbox
+  template:
+    metadata:
+      annotations:
+        checksum/config: 436e965553d4e28aa05e1233226900d91ec96e44a68694c4c185a5c1565881d4
+        checksum/secret: 93437a2ac1c742f105d88109d8569e59ff157a72b8a69ff233e5d09abe16fb27
+      labels:
+        app.kubernetes.io/name: netbox
+        app.kubernetes.io/instance: netbox
+        app.kubernetes.io/component: netbox
+    spec:
+      serviceAccountName: netbox
+      securityContext:
+        fsGroup: 1000
+        runAsNonRoot: true
+      initContainers:
+        - name: init-dirs
+          image: "busybox:1.32.1"
+          imagePullPolicy: IfNotPresent
+          command: [/bin/sh, -c, mkdir -p /opt/unit/state /opt/unit/tmp]
+          securityContext:
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+          volumeMounts:
+            - name: optunit
+              mountPath: /opt/unit        
+      containers:
+        - name: netbox
+          securityContext:
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+          image: "netboxcommunity/netbox"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DB_HOST
+              value: "10.205.230.2"
+            - name: DB_NAME
+              value: "netbox"
+            - name: DB_NAME
+              value: "netbox"      
+            - name: DB_USER
+              value: "netbox"
+            - name: EMAIL_FROM
+              value: "netbox@bar.com"
+            - name: REDIS_CACHE_DATABASE
+              value: "1"
+            - name: REDIS_DATABASE
+              value: "0"
+            - name: REDIS_CACHE_HOST
+              value: "10.205.230.2"
+            - name: REDIS_HOST
+              value: "10.205.230.2"
+            - name: SUPERUSER_EMAIL
+              value: "admin@example.com"
+            - name: SKIP_STARTUP_SCRIPTS
+              value: "true"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: netbox-secrets
+                  key: DB_PASSWORD
+            - name: REDIS_CACHE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: netbox-secrets
+                  key: REDIS_CACHE_PASSWORD
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: netbox-secrets
+                  key: REDIS_PASSWORD
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: netbox-secrets
+                  key: SECRET_KEY
+          volumeMounts:
+            - name: optunit
+              mountPath: /opt/unit                  
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /login/
+              port: http
+      volumes:
+        - name: optunit
+          emptyDir:
+            medium: Memory              
+---
+
